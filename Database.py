@@ -9,7 +9,8 @@ class Database:
         self.password = password
         self.connection = None
 
-    def establish_connection(self):
+    def connect(self):
+        """Establish a database connection."""
         try:
             self.connection = mysql.connector.connect(
                 host=self.host,
@@ -17,14 +18,21 @@ class Database:
                 user=self.user,
                 password=self.password
             )
-            if self.connection.is_connected():
-                print("Successfully connected to the database")
-                return self.connection
+            return self.connection.is_connected()
         except Error as e:
-            print(f"Error while connecting to MySQL: {e}")
-            return None
+            print(f"[DB ERROR] {e}")
+            return False
 
-    def close_connection(self):
+    def get_cursor(self):
+        """Return a buffered cursor."""
+        if self.connection:
+            return self.connection.cursor(buffered=True)
+        raise ConnectionError("Database connection not established.")
+
+    def commit(self):
+        if self.connection:
+            self.connection.commit()
+
+    def close(self):
         if self.connection and self.connection.is_connected():
             self.connection.close()
-            print("Database connection closed.")
