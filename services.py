@@ -1,8 +1,8 @@
-# services.py
-#
-# The logic layer of the application.
-# No SQL — only calls functions inside query.py.
-# Does validation, printing, and commit handling.
+"""Services / business logic layer
+
+This module validates inputs and orchestrates calls to `query` (SQL helpers).
+It performs commits and returns (success, payload_or_message) tuples.
+"""
 
 import query
 
@@ -48,7 +48,7 @@ def list_tables(cursor):
 # ======================================================
 
 def verify_owner_of_animal(cursor, owner_id, animal_id):
-    """Returns tuple (is_valid, animal_name)."""
+    # Return (is_valid, animal_name)
     result = query.get_animal_owner(cursor, animal_id)
     if not result:
         return False, None
@@ -118,8 +118,6 @@ def schedule_appointment_and_treatment(cursor, connection, owner_id, animal_id, 
 
 def get_appointment_summary(cursor, owner_id, animal_id):
     # Verify ownership
-    #cursor.execute("SELECT Animal_OwnerID FROM Animal WHERE AnimalID = %s", (animal_id,))
-    
     row = query.get_owner_of_animal(cursor, animal_id)
 
     if not row or str(row[0]) != str(owner_id):

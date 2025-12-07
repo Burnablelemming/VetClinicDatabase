@@ -1,7 +1,7 @@
-# ui.py
-#
-# Handles user interaction: input prompts, printing, table selection.
-# No SQL or business logic here.
+"""UI helpers
+
+Small helpers for prompting and printing. No SQL or business logic here.
+"""
 
 import services
 
@@ -10,14 +10,13 @@ import services
 # ======================================================
 
 def prompt(message, default=None):
-    """Generic input helper with default support."""
+    # Generic input helper with default support
     value = input(f"{message} " + (f"(default: {default}): " if default else ": "))
     return value if value else default
 
 
 def print_query_results(cursor, rows):
-    """Print any SQL query result using column names from cursor.description."""
-
+    # Print SQL query results using column names from cursor.description
     if not rows:
         print("No results found.\n")
         return
@@ -61,8 +60,7 @@ def print_query_results(cursor, rows):
 
 
 def print_dict_table(data_dict, title=None):
-    """Prints a dictionary in a clean Field | Value table format."""
-    
+    # Print a dictionary in a Field | Value table format
     if title:
         print(f"\n{title}")
         print("-" * len(title))
@@ -89,7 +87,7 @@ def print_dict_table(data_dict, title=None):
 # ======================================================
 
 def list_tables_ui(cursor):
-    """Gets list of tables from DB and prints them."""
+    # Get and print available tables
     tables = services.list_tables(cursor)
     if not tables:
         print("No tables found.")
@@ -102,12 +100,8 @@ def list_tables_ui(cursor):
 
 
 def choose_table_ui(cursor):
-    """Allows the user to pick ANY table from the database."""
-    # cursor.execute("SHOW TABLES")
-    # tables = [t[0] for t in cursor.fetchall()]
-
+    # Let user pick any table from the DB
     tables = services.list_tables(cursor)
-
     if not tables:
         print("No tables available.")
         return None
@@ -117,7 +111,6 @@ def choose_table_ui(cursor):
         print(f"{i}. {t}")
 
     choice = input("Enter table number: ")
-
     try:
         idx = int(choice) - 1
         if 0 <= idx < len(tables):
@@ -129,16 +122,9 @@ def choose_table_ui(cursor):
     return None
 
 def choose_insert_table_ui(cursor):
-    """Allows the user to pick a table for INSERT, excluding restricted tables."""
-    
+    # Pick a table for INSERT, excluding restricted tables
     RESTRICTED_INSERT_TABLES = {"appointment", "treatment"}
-
-    # cursor.execute("SHOW TABLES")
-    # tables = [t[0] for t in cursor.fetchall()]
-
     tables = services.list_tables(cursor)
-
-    # Filter out restricted tables
     valid_tables = [t for t in tables if t not in RESTRICTED_INSERT_TABLES]
 
     if not valid_tables:
@@ -150,7 +136,6 @@ def choose_insert_table_ui(cursor):
         print(f"{i}. {t}")
 
     choice = input("Enter table number: ")
-
     try:
         idx = int(choice) - 1
         if 0 <= idx < len(valid_tables):
@@ -167,9 +152,8 @@ def choose_insert_table_ui(cursor):
 # ======================================================
 
 def choose_treatment_ui(cursor):
-    """Displays treatments and returns chosen ID or 0 for new one."""
+    # Show treatments and return chosen ID (or '0' for new)
     treatments = services.get_existing_treatments(cursor)
-    
     print("\nExisting Treatments:")
     if not treatments:
         print("  None found.")
@@ -185,7 +169,7 @@ def choose_treatment_ui(cursor):
 
 
 def get_new_treatment_type_ui():
-    """Prompt user for new treatment type."""
+    # Prompt for a new treatment type
     return input("Enter NEW TreatmentType: ")
 
 
@@ -194,9 +178,8 @@ def get_new_treatment_type_ui():
 # ======================================================
 
 def get_appointment_inputs():
-    """Bundle all user prompts for appointment creation."""
+    # Collect inputs required to schedule an appointment
     print("\nSchedule Appointment")
-
     owner_id = input("OwnerID: ")
     animal_id = input("AnimalID: ")
     vet_id = input("TreatingVetID: ")
@@ -206,16 +189,20 @@ def get_appointment_inputs():
 
 
 def get_treatment_summary_inputs():
+    # Prompt for owner and animal IDs for treatment summary
     print("\nReturn Treatment Summary")
     owner_id = input("OwnerID: ")
     animal_id = input("AnimalID: ")
+
     return owner_id, animal_id
 
 
 def get_cancel_appt_inputs():
+    # Prompt for appointment cancellation inputs
     print("\nCancel Appointment")
     appt_id = input("Appointment ID: ")
     animal_id = input("AnimalID: ")
+    
     return appt_id, animal_id
 
 
@@ -224,10 +211,12 @@ def get_cancel_appt_inputs():
 # ======================================================
 
 def print_appointment_result(result_dict):
+    # Nicely print appointment details
     print_dict_table(result_dict, title="Appointment Scheduled Successfully")
 
 
 def print_pet_list(pets):
+    # Print a simple list of pets
     if not pets:
         print("No pets registered for this owner.")
         return
@@ -239,6 +228,7 @@ def print_pet_list(pets):
 
 
 def print_treatment_summary(summary_rows):
+    # Print appointment treatment summary rows
     if not summary_rows:
         print("No treatments found.")
         return

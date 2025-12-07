@@ -1,7 +1,8 @@
-# query.py
-#
-# This module contains ONLY SQL queries.
-# No printing, no input, no business logic, no commits.
+"""Query helpers
+
+This module contains SQL-only helpers used by the services layer.
+No printing, no input, no business logic, and no commits happen here.
+"""
 
 def list_tables(cur):
     cur.execute("SHOW TABLES")
@@ -23,10 +24,8 @@ def select_all_from_table(cur, table_name, limit=1000):
 
 
 def insert_into_table(cur, table_name, columns, values):
-    """
-    columns: list of column names
-    values: list or tuple of values
-    """
+    # columns: list of column names
+    # values: list or tuple of values
     placeholders = ", ".join(["%s"] * len(values))
     colnames = ", ".join([f"`{c}`" for c in columns])
     sql = f"INSERT INTO `{table_name}` ({colnames}) VALUES ({placeholders})"
@@ -34,9 +33,7 @@ def insert_into_table(cur, table_name, columns, values):
 
 
 def update_table_row(cur, table_name, primary_key_col, pk_value, updates):
-    """
-    updates: dict of { column_name: new_value }
-    """
+    # updates: dict of { column_name: new_value }
     set_clause = ", ".join([f"`{col}` = %s" for col in updates.keys()])
     sql = f"UPDATE `{table_name}` SET {set_clause} WHERE `{primary_key_col}` = %s"
     params = list(updates.values()) + [pk_value]
@@ -145,7 +142,7 @@ def get_appt_animal(cur, appt_id):
 
 
 def get_owner_of_animal(cur, animal_id):
-    """Return Animal_OwnerID for verification."""
+    # Return Animal_OwnerID for verification
     sql = "SELECT Animal_OwnerID FROM Animal WHERE AnimalID = %s"
     cur.execute(sql, (animal_id,))
     return cur.fetchone()

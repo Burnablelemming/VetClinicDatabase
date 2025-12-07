@@ -1,16 +1,16 @@
-# main.py
-#
-# Clean controller / entry point.
-# No SQL. No business logic.
-# Just the menu and calls into ui + services.
+"""main.py
+
+Thin controller / entry point.
+- Presents the interactive menu and delegates work to `ui` and `services`.
+"""
 
 from Database import Database
 import ui
 import services
 
 
+# Prompt user until a DB connection is successful
 def establish_connection_ui():
-    """Repeatedly prompts user for DB info until connection is successful."""
     while True:
         print("\nEnter database login details:")
         host = ui.prompt("Host", "localhost")
@@ -27,8 +27,10 @@ def establish_connection_ui():
             print("Connection failed. Try again.\n")
 
 
+# Main program: menu loop and dispatch to ui/services
 def main():
     db = establish_connection_ui()
+    # get a DB cursor for all operations
     cursor = db.get_cursor()
 
     while True:
@@ -42,6 +44,7 @@ def main():
         print("7. List Pets By Owner")
         print("8. Exit")
 
+        # read user menu selection
         choice = input("Enter choice: ")
 
         # ------------------------------------------------------
